@@ -10,7 +10,6 @@
 #include <cstdlib>
 #include <string>
 
-
 // You will write the tetris.h and tetris.cpp files to implement the
 // Tetris class.
 #include "tetris.h"
@@ -33,10 +32,10 @@ int main(int argc, char* argv[]) {
   // NOTE: UNCOMMENT THESE FUNCTIONS AS YOU WORK THROUGH YOUR IMPLEMENTATION
   // =======================================================================
 
- // test_example();
- // test_score_multirow();
- // test_add_remove_columns();
- // test_all_pieces_all_rotations();
+  test_example();
+  test_score_multirow();
+  test_add_remove_columns();
+  test_all_pieces_all_rotations();
   
   additional_student_tests();
 
@@ -264,7 +263,7 @@ void additional_student_tests() {
 
   std::cout << "=====================================================================" << std::endl;
   std::cout << "additional_student_tests()" << std::endl;
-
+  //add some pieces to see if they look good....
   Tetris tetris(14);
   std::cout << "First add somes pieces..."<<std::endl;
   tetris.add_piece('I',90,0);
@@ -276,6 +275,7 @@ void additional_student_tests() {
   tetris.add_piece('T',270,0);
   tetris.add_piece('Z',0,9);
   tetris.add_piece('I',0,12);
+  //check if the heights is right
   assert (tetris.get_max_height() == 4);
   std::cout<< "The results look like....:"<<std::endl;
   tetris.print();
@@ -286,11 +286,23 @@ void additional_student_tests() {
   tetris.add_piece('T',0,6);
   tetris.print();
   tetris.remove_full_rows();
-  std::cout<< "After removing:: "<<std::endl;
+  std::cout<< "After removing: "<<std::endl;
+  //check if the remove row work well
   assert (tetris.get_max_height() == 2);
   tetris.print();
+  //create new tetris to have text rpi...
+  Tetris tetris1(13);
+  std::cout<< "print RPI "<<std::endl;
+  tetris1.add_piece('I',0,1);
+  tetris1.add_piece('J',270,1);
+  tetris1.add_piece('J',0,6);
+  tetris1.add_piece('I',0,6);
+  tetris1.add_piece('O',180,7);
+  tetris1.add_piece('I',0,11);
+  tetris1.print();
+  //clean up 2 tetris..
   tetris.destroy();
-
+  tetris1.destroy();
   std::cout << "done with additional_student_tests()" << std::endl;
 }
 

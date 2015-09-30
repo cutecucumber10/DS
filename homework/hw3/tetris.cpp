@@ -5,9 +5,13 @@
 #include <iostream>
 
 Tetris::Tetris(int aWidth) {
+	//set up a new tetris
 	width = aWidth;
+	//create dynamic memory of data and heights
 	data = new char*[width];
 	heights = new int[width];
+	//default height is zero
+	//default data[i] length 0
 	for (int i = 0; i < width; ++i) {
 		heights[i] = 0;
 		data[i] = new char[0];
@@ -54,7 +58,7 @@ void Tetris::destroy() {
 	delete [] data;
 }
 
-void Tetris::copy_delete(char** &data,char** &data1, int* heights1) {
+void Tetris::copy_delete(char** &data,char** &data1, int* &heights1) {
 	//this function copy data to data1
 	//data1 is larger 2D array which can hold the data;
 	//heights1 is the heights of data1;
@@ -84,6 +88,7 @@ void Tetris::copy_delete(char** &data,char** &data1, int* heights1) {
 }
 
 int Tetris::remove_full_rows(){
+	//remove a row if the row is full of squares.....
 	int scores = 0; 
 	int i = 0;
 	while (i < get_min_height()) {
@@ -151,6 +156,7 @@ int Tetris::remove_full_rows(){
 		for (int k = 0; k < heights[j]; ++k) 
 			data1[j][k] = data[j][k];
 	}
+	//clean up
 	for (int j = 0; j < width; ++j) 
 		delete [] data[j];
 	delete []data;
@@ -159,7 +165,9 @@ int Tetris::remove_full_rows(){
 }
 
 void Tetris::add_left_column() {
+	//add a column to be the first col, copy other.
 	width += 1;
+	//create new data and heights
 	int* heights1 = new int[width];
 	char** data1 = new char*[width];
 	for (int i = 0; i < width; i++) {
@@ -185,7 +193,9 @@ void Tetris::add_left_column() {
 }
 
 void Tetris::add_right_column() {
+	//add a col to be the last col, other unchanged
 	width += 1;
+	//create new data and heights
 	int* heights1 = new int[width];
 	char** data1 = new char*[width];
 	for (int i = 0; i < width; i++) {
@@ -202,6 +212,7 @@ void Tetris::add_right_column() {
 		for (int j = 0; j < heights1[i]; j++)
 			data1[i][j] = data[i][j];
 	}
+	//delete dynamic data..avoid memory leak
 	for (int i = 0; i < width-1; i++)
 		delete [] data[i];
 	delete [] data;
@@ -211,7 +222,9 @@ void Tetris::add_right_column() {
 }
 
 void Tetris::remove_left_column() {
+	//delete the first col
 	width -= 1;
+	//create new data and heights
 	int* heights1 = new int[width];
 	char** data1 = new char*[width];
 	for (int i = 0; i < width; i++) 
@@ -223,6 +236,7 @@ void Tetris::remove_left_column() {
 			//data1 col 0 = data col 1
 			data1[i][j] = data[i+1][j];
 	}
+	//delete dynamic data..avoid memory leak
 	for (int i = 0; i < width+1; i++)
 		delete [] data[i];
 	delete [] data;
@@ -232,7 +246,9 @@ void Tetris::remove_left_column() {
 }
 
 void Tetris::remove_right_column() {
+	//delete the right col
 	width -= 1;
+	//create new data and heights
 	int* heights1 = new int[width];
 	char** data1 = new char*[width];
 	for (int i = 0; i < width; i++) 
@@ -252,7 +268,7 @@ void Tetris::remove_right_column() {
 	heights = heights1;
 }
 
-void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
+void Tetris::add_piece(const char &piece_name, const int rotation, const int placement ) {
 	///all the if statements are under same structure (not so much change....)
 	///(except details in setting heights and data and replace piecename.... )
 	///get a new_height variable to construct new *height pointer
@@ -311,7 +327,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			// find the height of the placement position....
 			int new_height;
 			new_height = heights[placement]+4;
-			
+			//create data1 to store new piece and old piece
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
 			for (int i = 0; i < width; ++i) {
@@ -325,6 +341,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement][new_height-2] = piece_name;
 			data[placement][new_height-3] = piece_name;
@@ -333,14 +350,17 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 		else {
 			/////////////The piece looks like     ///////////////////////////
 			/////////////  new_height ->    I I I I    //////////////////////
+			//Find the new height within the piece range
 			int new_height = heights[placement];
 			for (int i = placement; i < placement+4; ++i) {
 				if (heights[i] > new_height)
 					new_height = heights[i];
 			}
 			new_height += 1;
+			//create data1 to store new piece and old piece
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i==placement || i==placement+1 || i==placement +2 || i==placement +3) {
 					data1[i] = new char[new_height];
@@ -352,6 +372,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement+1][new_height-1] = piece_name;
 			data[placement+2][new_height-1] = piece_name;
@@ -364,6 +385,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			/////////////The piece looks like     ///////////////////////////
 			///////////// new_height ->     T T T    ////////////////////////
 			////////////                      T      ////////////////////////
+			//Find the new height within the piece range
 			if ((heights[placement+1] >= heights[placement]) && \
 				(heights[placement+1] >= heights[placement+2]) )
 				new_height = heights[placement+1]+2;
@@ -373,8 +395,10 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				else 
 					new_height = heights[placement+2]+1;
 			}
+			//create data1 to store new piece and old piece
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i==placement || i==placement+1 || i==placement+2 ) {
 					data1[i] = new char[new_height];
@@ -386,6 +410,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement+1][new_height-1] = piece_name;
 			data[placement+1][new_height-2] = piece_name;
@@ -397,13 +422,15 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			/////////////                    T     //////////////////////////
 			/////// new_height ->          T T      /////////////////////////
 			/////////////                    T     //////////////////////////
+			//Find the new height within the piece range
 			if (heights[placement] > heights[placement+1] )
 				new_height = heights[placement]+1;
 			else
 				new_height = heights[placement+1]+2;
-			
+			//create data1 to store new piece and old piece
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i==placement) {
 					data1[i] = new char[new_height];
@@ -420,6 +447,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement+1][new_height] = piece_name;
 			data[placement+1][new_height-1] = piece_name;
@@ -430,14 +458,17 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			/////////////The piece looks like     ///////////////////////////
 			/////////////                     T      ////////////////////////
 			////////// new_height ->        T T T    ////////////////////////
+			//Find the new height within the piece range
 			new_height = heights[placement];
 			for (int i = placement; i < placement+3; ++i) {
 				if (heights[i] > new_height)
 					new_height = heights[i];
 			}
 			new_height +=1;
+			//create data1 to store new piece and old piece
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i == placement || i == placement+2) {
 					data1[i] = new char[new_height];
@@ -454,6 +485,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement+1][new_height] = piece_name;
 			data[placement+1][new_height-1] = piece_name;
@@ -464,12 +496,15 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			/////////////                     T      ////////////////////////
 			////////// new_height ->          T T    ////////////////////////
 			/////////////                     T      ////////////////////////
+			//Find the new height within the piece range
 			if (heights[placement] >= heights[placement+1] )
 				new_height = heights[placement]+2;
 			else
-				new_height = heights[placement+1]+1;	
+				new_height = heights[placement+1]+1;
+			//create data1 to store new piece and old piece	
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i==placement) {
 					data1[i] = new char[new_height+1];
@@ -486,6 +521,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement][new_height-2] = piece_name;
 			data[placement][new_height] = piece_name;
@@ -498,6 +534,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			/////////////The piece looks like            ////////////////////
 			////////// new_height ->          Z Z        ////////////////////
 			/////////////                       Z Z      ////////////////////
+			//Find the new height within the piece range
 			if (heights[placement] > heights[placement+1] && \
 			    heights[placement] > heights[placement+2])
 			    new_height = heights[placement]+1;
@@ -507,9 +544,10 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				else
 					new_height = heights[placement+2] +2;
 			}
-			
+			//create data1 to store new piece and old piece
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i==placement || i==placement+1) {
 					data1[i] = new char[new_height];
@@ -525,6 +563,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement+1][new_height-1] = piece_name;
 			data[placement+1][new_height-2] = piece_name;
@@ -535,13 +574,15 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			//////////                          Z        ////////////////////
 			///////////  new_height ->        Z Z        ////////////////////
 			/////////////                     Z          ////////////////////
+			//Find the new height within the piece range
 			if (heights[placement] >= heights[placement+1])	
 				new_height = heights[placement]+2;
 			else 
 				new_height = heights[placement+1]+1;
-			
+			//create data1 to store new piece and old piece
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i==placement) {
 					data1[i] = new char[new_height];
@@ -557,6 +598,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement][new_height-2] = piece_name;
 			data[placement+1][new_height-1] = piece_name;
@@ -569,6 +611,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			/////////////The piece looks like            ///////////////////
 			//////////                        S S        ///////////////////
 			///////////new_height ->        S S         ////////////////////
+			//Find the new height within the piece range
 			if (heights[placement+2] > heights[placement+1] && \
 			    heights[placement+2] > heights[placement])
 			    new_height = heights[placement+2];
@@ -577,9 +620,11 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 					new_height = heights[placement+1] +1;
 				else
 					new_height = heights[placement] +1;
-			}			
+			}
+			//create data1 to store new piece and old piece			
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i==placement+2 || i==placement+1) {
 					data1[i] = new char[new_height+1];
@@ -595,6 +640,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement+1][new_height-1] = piece_name;
 			data[placement+1][new_height] = piece_name;
@@ -605,12 +651,15 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			//////////                        S          ////////////////////
 			///////////  new_height ->        S S        ////////////////////	
 			/////////////                       S        ////////////////////
+			//Find the new height within the piece range
 			if (heights[placement] > heights[placement+1])
 				new_height = heights[placement]+1;
 			else 
-				new_height = heights[placement+1]+2;		
+				new_height = heights[placement+1]+2;
+			//create data1 to store new piece and old piece		
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i==placement+1) {
 					data1[i] = new char[new_height];
@@ -626,10 +675,11 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
-			data[placement][new_height-1] = 'S';
-			data[placement][new_height] = 'S';
-			data[placement+1][new_height-1] = 'S';
-			data[placement+1][new_height-2] = 'S';
+			//change the gap into piecename
+			data[placement][new_height-1] = piece_name;
+			data[placement][new_height] = piece_name;
+			data[placement+1][new_height-1] = piece_name;
+			data[placement+1][new_height-2] = piece_name;
 		}
 	}
 	else if (piece_name == 'L') {
@@ -639,12 +689,15 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			//////////                        L          ////////////////////
 			///////////                       L          ////////////////////	
 			///////////// new_height ->       L L        ////////////////////
+			//Find the new height within the piece range
 			if (heights[placement] > heights[placement+1])
 				new_height = heights[placement] +1;
 			else 
-				new_height = heights[placement+1] +1; 		
+				new_height = heights[placement+1] +1; 	
+			//create data1 to store new piece and old piece	
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i==placement) {
 					data1[i] = new char[new_height+2];
@@ -660,6 +713,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement][new_height] = piece_name;
 			data[placement][new_height+1] = piece_name;
@@ -669,6 +723,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			/////////////The piece looks like            ////////////////////
 			//////////    new_height ->        L l l     ////////////////////	
 			/////////////                      L         ////////////////////
+			//Find the new height within the piece range
 			if (heights[placement] >= heights[placement+1] && \
 				heights[placement] >= heights[placement+2])
 				new_height = heights[placement]+2;
@@ -678,8 +733,10 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				else
 					new_height = heights[placement+2]+1;
 			}		
+			//create data1 to store new piece and old piece
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i==placement || i == placement+1 || i == placement+2) {
 					data1[i] = new char[new_height];
@@ -691,6 +748,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement][new_height-2] = piece_name;
 			data[placement+1][new_height-1] = piece_name;
@@ -701,12 +759,15 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			//////////    new_height ->     l L         ////////////////////
 			///////////                       L          ////////////////////	
 			/////////////                     L          ////////////////////
+			//Find the new height within the piece range
 			if (heights[placement] > heights[placement+1]+1 ) 
 				new_height = heights[placement]+1;
 			else 
-				new_height = heights[placement+1]+3;			
+				new_height = heights[placement+1]+3;
+			//create data1 to store new piece and old piece			
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i==placement || i == placement+1) {
 					data1[i] = new char[new_height];
@@ -718,6 +779,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement+1][new_height-1] = piece_name;
 			data[placement+1][new_height-2] = piece_name;
@@ -727,15 +789,17 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			/////////////The piece looks like            ////////////////////	
 			/////////////                          L     ////////////////////
 			//////////    new_height ->        L l l     ////////////////////
-			/////almost same as T....copy.............../////////////////////
+			//Find the new height within the piece range
 			new_height = heights[placement];
 			for (int i = placement; i < placement+3; ++i) {
 				if (heights[i] > new_height)
 					new_height = heights[i];
 			}
 			new_height +=1;			
+			//create data1 to store new piece and old piece
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i == placement || i == placement+1) {
 					data1[i] = new char[new_height];
@@ -751,6 +815,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement+2][new_height] = piece_name;
 			data[placement+1][new_height-1] = piece_name;
@@ -764,12 +829,15 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			//////////                        J          ////////////////////
 			///////////                       J          ////////////////////	
 			///////////// new_height ->     J J          ////////////////////
+			//Find the new height within the piece range
 			if (heights[placement] > heights[placement+1])
 				new_height = heights[placement] +1;
 			else 
-				new_height = heights[placement+1] +1; 		
+				new_height = heights[placement+1] +1;
+			//create data1 to store new piece and old piece 		
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i==placement+1) {
 					data1[i] = new char[new_height+2];
@@ -785,6 +853,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement+1][new_height] = piece_name;
 			data[placement+1][new_height+1] = piece_name;
@@ -795,14 +864,17 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			/////////////                      J         ////////////////////
 			//////////    new_height ->        J J J     ////////////////////
 			/////almost same as T....copy.............../////////////////////
+			//Find the new height within the piece range
 			new_height = heights[placement];
 			for (int i = placement; i < placement+3; ++i) {
 				if (heights[i] > new_height)
 					new_height = heights[i];
 			}
-			new_height +=1;			
+			new_height +=1;
+			//create data1 to store new piece and old piece			
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i == placement+1 || i == placement+2) {
 					data1[i] = new char[new_height];
@@ -818,6 +890,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement][new_height] = piece_name;
 			data[placement+1][new_height-1] = piece_name;
@@ -828,13 +901,15 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			//////////    new_height ->       J J        ////////////////////
 			///////////                       J          ////////////////////	
 			/////////////                     J          ////////////////////
+			//Find the new height within the piece range
 			if (heights[placement+1] > heights[placement]+1 ) 
 				new_height = heights[placement+1]+1;
 			else 
 				new_height = heights[placement]+3;
-			
+			//create data1 to store new piece and old piece
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i==placement || i == placement+1) {
 					data1[i] = new char[new_height];
@@ -846,6 +921,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement][new_height-2] = piece_name;
 			data[placement][new_height-3] = piece_name;
@@ -855,6 +931,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 			/////////////The piece looks like            ////////////////////
 			//////////    new_height ->        J J J     ////////////////////	
 			/////////////                          J     ////////////////////
+			//Find the new height within the piece range
 			if (heights[placement+2] >= heights[placement+1] && \
 				heights[placement+2] >= heights[placement])
 				new_height = heights[placement+2]+2;
@@ -863,9 +940,11 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 					new_height = heights[placement]+1;
 				else
 					new_height = heights[placement+1]+1;
-			}		
+			}	
+			//create data1 to store new piece and old piece	
 			char **data1 = new char*[width];
 			int *heights1 = new int[width];
+			//set up heights and data
 			for (int i = 0; i < width; ++i) {
 				if (i==placement || i == placement+1 || i == placement+2) {
 					data1[i] = new char[new_height];
@@ -877,6 +956,7 @@ void Tetris::add_piece(const char &piece_name, int rotation, int placement ) {
 				}
 			}
 			copy_delete(data,data1,heights1);
+			//change the gap into piecename
 			data[placement][new_height-1] = piece_name;
 			data[placement+2][new_height-2] = piece_name;
 			data[placement+1][new_height-1] = piece_name;
