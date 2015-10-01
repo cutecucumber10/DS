@@ -91,7 +91,52 @@ int main() {
 
 
   // ADD MORE TEST CASES HERE
+  // Test a lot of push_backs
+  Vec<int> v4;
+  for (i = 0; i != 100; ++i) {
+    v4.push_back(i);
+    //v4.print();
+  }
 
-    
+  Vec<int>::size_type num;
+  
+  //Test removing_matching_elements
+  std::cout<<"removing things..."<<std::endl;
+  /*
+  v1.print();
+  num = removing_matching_elements(v1,100);
+  v1.print();
+  std::cout<<num<<std::endl;
+  v2.print();
+  num = removing_matching_elements(v2,0);
+  v2.print();
+  std::cout<<num<<std::endl;  
+  */
+  std::cout<<std::endl;
+  std::cout<<"check when the element not in the vec..."<<std::endl;
+  num = removing_matching_elements(v1,3);
+  v1.print();
+  std::cout<<std::endl;
+  v1.resize(v1.size());
+  v1.print();
+  std::cout<<std::endl;
+  std::cout<<"check it is vector just once"<<std::endl;
+  v1.print();
+  num = removing_matching_elements(v1,5);
+  v1.resize(v1.size());
+  v1.print();
+  std::cout<<std::endl;
+  std::cout<<"first element"<<std::endl;
+  v2.print();
+  num = removing_matching_elements(v2,0);
+  v2.resize(v2.size());
+  v2.print();
+  std::cout<<std::endl;
+  std::cout<<"it is the only ele"<<std::endl;
+  v2.print();
+  num = removing_matching_elements(v2,5);
+  v2.resize(v2.size());
+  v2.print();
   return 0; 
+  
 }

@@ -29,6 +29,7 @@ public:
   void clear() { delete [] m_data;  create(); }
   bool empty() const { return m_size == 0; }
   size_type size() const { return m_size; }
+  void print() const;
 
   // ITERATOR OPERATIONS
   iterator begin() { return m_data; }
@@ -120,7 +121,7 @@ template <class T> typename Vec<T>::iterator Vec<T>::erase(iterator p) {
 // greater than the current size, the new slots must be filled in with the given value. 
 // Re-allocation should occur only if necessary.  push_back should not be used.
 template <class T> void Vec<T>::resize(size_type n, const T& fill_in_value) {
-  if (n <= m_size)
+  if (n < m_size)
     m_size = n;
   else {
     // If necessary, allocate new space and copy the old values
@@ -132,6 +133,15 @@ template <class T> void Vec<T>::resize(size_type n, const T& fill_in_value) {
       delete [] m_data;
       m_data = new_data;
     }
+    else {
+      m_alloc = n;
+      T* new_data = new T[m_alloc];
+      for (size_type i=0; i<m_size; ++i)
+        new_data[i] = m_data[i];
+      delete [] m_data;
+      m_data = new_data;
+      return;
+    }
     
     // Now fill in the remaining values and assign the final size.
     for (size_type i = m_size; i<n; ++i)
@@ -139,4 +149,32 @@ template <class T> void Vec<T>::resize(size_type n, const T& fill_in_value) {
     m_size = n;
   }
 }
+
+
+template <class T> void Vec<T>::print() const {
+  std::cout<<"m_alloc: "<<m_alloc<<std::endl;
+  std::cout<<"m_size: "<<m_size<<std::endl;
+  std::cout<<"vector includes: ";
+  for (size_type i = 0; i < m_size; ++i) 
+    std::cout<<m_data[i]<<' ';
+  std::cout<<std::endl;
+}
+
+
+template <class T> unsigned int removing_matching_elements(Vec<T>& v, const T& val) {
+  typename Vec<T>::iterator p;
+  unsigned int num = 0;
+  for (p=v.begin(); p<v.end(); ++p) {
+    if (*p == val) {
+      v.erase(p);
+      num ++;
+      p--;
+    }
+  }
+
+
+  return num;
+}
+
+
 #endif

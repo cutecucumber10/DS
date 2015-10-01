@@ -45,7 +45,7 @@ class Tetris {
 		////clean up functions
 		void destroy(); 
 		////copy a data to a new data...(use in add_piece function)
-		void copy_delete(char** &data,char** &data1, int* &heights1);
+		void copy_delete(char** data,char** data1, int* heights1);
 		////a print function...implement in main.cpp
 		void print() const;
 

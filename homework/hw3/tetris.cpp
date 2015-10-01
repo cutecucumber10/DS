@@ -58,7 +58,7 @@ void Tetris::destroy() {
 	delete [] data;
 }
 
-void Tetris::copy_delete(char** &data,char** &data1, int* &heights1) {
+void Tetris::copy_delete(char** data,char** data1, int* heights1) {
 	//this function copy data to data1
 	//data1 is larger 2D array which can hold the data;
 	//heights1 is the heights of data1;
