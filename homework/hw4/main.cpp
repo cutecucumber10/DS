@@ -57,10 +57,9 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 			++in_item;
 		}
 	}
-	//check if the
 	//if not in_item, error appears, and do nothing..... 
 	if (found_item == false) {
-			std::cerr<<"Customer"<<event.get_c_id()<<"requested item "\
+			std::cerr<<"Customer "<<event.get_c_id()<<" requested item "\
 			<<event.get_i_id()<<" which is not in the inventory.\n";
 	}
 	//if item in_item
@@ -114,7 +113,8 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 				std::list<IDQ_C> c_rental;
 				(*in_item_cus).get_rental(c_rental);
 				int count_c_rental;
-				for (std::list<IDQ_C>::iterator in_c_rental = c_rental.begin() ; in_c_rental != c_rental.end(); ) {
+				for (std::list<IDQ_C>::iterator in_c_rental = c_rental.begin() ; \
+					in_c_rental != c_rental.end(); ) {
 					if ((*in_c_rental).get_i_id() == event.get_i_id()) {
 						found_c_rental = true;
 						break; }
@@ -139,7 +139,8 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 				IDQ_C new_item(event.get_i_id(), event.get_num());
 				new_customer.add_rental(new_item);
 				bool if_last_one = true;
-				for (std::list<Customer>::iterator p = customers.begin(); p != customers.end(); ++p) {
+				for (std::list<Customer>::iterator p = customers.begin(); \
+					p != customers.end(); ++p) {
 					if (event.get_c_id() < (*p).get_c_id()) {
 						customers.insert(p, new_customer);
 						if_last_one = false;
@@ -157,38 +158,86 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 			//add to pending list....
 			//no need to change amount of avalibility
 			//add both to inventoty and customer lists
-			//
-			IDQ_I a_customer(event.get_c_id(), event.get_name(), event.get_num());
-			IDQ_C an_item(event.get_i_id(), event.get_num());
-			(*in_item).add_pending(a_customer);
-			//check if the customer is activated :D
-			bool found_customer = false;
-			std::list<Customer>::iterator in_item_cus;
-			for (in_item_cus = customers.begin(); in_item_cus != customers.end(); ) {
-				if ((*in_item_cus).get_c_id() == event.get_c_id()) {
-					found_customer = true;
-					break;}
-				else
-					in_item_cus++;
-			} 
-			//if activated, add to that pending list
-			if (found_customer == true) {
-				(*in_item_cus).add_pending(an_item);
+			std::list<IDQ_I> i_pending;
+			(*in_item).get_pending(i_pending);
+			std::list<IDQ_I>::iterator in_i_pending;
+			bool found_i_pending = false;
+			int count_i_pending = 0;
+			for (in_i_pending = i_pending.begin(); in_i_pending != i_pending.end();) {
+				if ((*in_i_pending).get_c_id() == event.get_c_id()) {
+					found_i_pending = true;
+				}
+				else {
+					in_i_pending++;
+					count_i_pending++;
+				}
 			}
-			//if not, add a new customer and add pending list 
-			else {
-				Customer activate_cus(event.get_c_id(), event.get_name());
-				activate_cus.add_pending(an_item);
-				bool if_last_one = true;
-				for (std::list<Customer>::iterator p = customers.begin(); p != customers.end(); ++p) {
-					if (event.get_c_id() < (*p).get_c_id()) {
-						customers.insert(p, activate_cus);
-						if_last_one = false;
+			if (found_i_pending == true) {
+				//set the pending number of the original customer..
+				(*in_item).set_pending(count_i_pending, event.get_num());
+				//find the customer iterator.....
+				bool found_p_customer = false;
+				std::list<Customer>::iterator in_item_cus;
+				for (in_item_cus = customers.begin(); in_item_cus != customers.end(); ) {
+					if ((*in_item_cus).get_c_id() == event.get_c_id()) {
+						found_p_customer = true;
+						break;}
+					else
+						in_item_cus++;
+				}
+				//the customer itr in_item_cus....
+				//find itr of pending items in the customer pending list....
+				std::list<IDQ_C>::iterator in_c_pending;
+				std::list<IDQ_C> c_pending;
+				(*in_item_cus).get_pending(c_pending);
+				int count_c_pending;
+				for (in_c_pending = c_pending.begin(); in_c_pending != c_pending.end(); ) {
+					if ((*in_c_pending).get_i_id() == event.get_i_id()) {
 						break;
 					}
+					else {
+						in_c_pending++;
+						count_c_pending++;
+					}
 				}
-				if (if_last_one == true) {
-					customers.push_back(activate_cus);
+				//set the number of customer pending items.....
+				(*in_item_cus).set_pending(count_c_pending, event.get_num());
+			}
+			else {
+				//if not find...push back pending customers to pending list of customer and item
+				IDQ_I a_customer(event.get_c_id(), event.get_name(), event.get_num());
+				IDQ_C an_item(event.get_i_id(), event.get_num());
+				(*in_item).add_pending(a_customer);
+				//check if the customer is activated :D
+				bool found_customer = false;
+				std::list<Customer>::iterator in_item_cus;
+				for (in_item_cus = customers.begin(); in_item_cus != customers.end(); ) {
+					if ((*in_item_cus).get_c_id() == event.get_c_id()) {
+						found_customer = true;
+						break;}
+					else
+						in_item_cus++;
+				} 
+				//if activated, add to that pending list
+				if (found_customer == true) {
+					(*in_item_cus).add_pending(an_item);
+				}
+				//if not, add a new customer and add pending list 
+				else {
+					Customer activate_cus(event.get_c_id(), event.get_name());
+					activate_cus.add_pending(an_item);
+					bool if_last_one = true;
+					for (std::list<Customer>::iterator p = customers.begin(); \
+						p != customers.end(); ++p) {
+						if (event.get_c_id() < (*p).get_c_id()) {
+							customers.insert(p, activate_cus);
+							if_last_one = false;
+							break;
+						}
+					}
+					if (if_last_one == true) {
+						customers.push_back(activate_cus);
+					}
 				}
 			}
 		}
@@ -210,7 +259,8 @@ void return_tool(const Event& event, std::list<Item>& items, \
 	}
 	//if not in the item list
 	if (found_item == false) {
-		std::cerr << "Customer "<< event.get_c_id() << " attempted to return item "<< event.get_i_id() << " which is not in the inventory.\n";
+		std::cerr << "Customer "<< event.get_c_id() << " attempted to return item "<< \
+		event.get_i_id() << " which is not in the inventory.\n";
 	}
 	//if in the item list
 	else {
@@ -252,7 +302,8 @@ void return_tool(const Event& event, std::list<Item>& items, \
 			}
 			//if not in the customer rental list, it is an error
 			if (found_c_rental == false) {				
-				std::cerr << "Customer " << event.get_c_id() << " attempted to return item.\n ";
+				std::cerr << "Customer " << event.get_c_id() << " attempted to return item " \
+				<< event.get_i_id() << " which she/he did not rent.\n";
 			}
 			//if in the rental list
 			else {
@@ -389,7 +440,7 @@ int main(int argc, char* argv[]) {
 		//input inventory file
 		//sort.....
 		while (one_item.read(in_str_i) ) {
-			if (one_item.get_i_id()[0] == 'T') {
+			if (one_item.get_i_id()[0] == 'T' and one_item.get_num() != 0) {
 				bool if_last_one = true;
 				for (std::list<Item>::iterator p = inventory.begin(); p != inventory.end(); ++p) {
 					if (one_item.get_i_id() < (*p).get_i_id()) {
@@ -414,8 +465,8 @@ int main(int argc, char* argv[]) {
 		for (an_event = events.begin(); an_event != events.end(); ++an_event) {
 			//first check if the action is rent or return
 			if ((*an_event).get_c_id()[0] != 'C') {
-				std::cerr << "Invalid customer information found for ID " << (*an_event).get_c_id() <<\
-				" in the customer file \n";
+				std::cerr << "Invalid customer information found for ID " << \
+				(*an_event).get_c_id() <<" in the customer file \n";
 			}
 			else {
 				if ((*an_event).get_action() == "rent") {
@@ -436,7 +487,8 @@ int main(int argc, char* argv[]) {
 			(*out_item).outputs(out_str_i);
 		}
 		//customer output
-		for (out_customer = customers.begin(); out_customer != customers.end(); ++out_customer) {
+		for (out_customer = customers.begin(); \
+			out_customer != customers.end(); ++out_customer) {
 			(*out_customer).outputs(out_str_c);
 		}
 	}

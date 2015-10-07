@@ -97,9 +97,9 @@ bool Item::read(std::istream& in_str) {
 		//it goes to end of the file......
 		return false;
 	}
-	if (i_id[0] != 'T') {
+	if (i_id[0] != 'T' || num == 0) {
 		//error but no need to stop....
-		std::cerr << "Invalid inventory ID " << i_id <<  "found in the inventory file.\n";
+		std::cerr << "Invalid inventory ID " << i_id <<  " found in the inventory file.\n";
 	}
 	return true;
 }
