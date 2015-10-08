@@ -1,6 +1,7 @@
 //File customer.h
 //Purpose: member type in the customer list, which will include 
 //id, name, rental and pending lists
+//arthor: Xinyue Yan(yanx3)
 
 #ifndef customer_h
 #define customer_h

@@ -1,6 +1,7 @@
 //File name: idq.h
 //idq ==> id_and_quantitie
 //Purpose: a container to hold an id and a quantity(in use for customer class)
+//arthor: Xinyue Yan(yanx3)
 
 #ifndef idq_c_h
 #define idq_c_h

@@ -1,5 +1,6 @@
 //File name : idq_c.cpp
 //Purpose: implementation of idq.h
+//arthor: Xinyue Yan(yanx3)
 
 #include "idq_c.h"
 

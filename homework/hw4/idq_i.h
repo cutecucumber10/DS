@@ -1,11 +1,14 @@
 //File name: idq.h
 //idq ==> id_and_quantitie
 //Purpose: a container to hold an id, a name and a quantity(in use for item class)
+//arthor: Xinyue Yan(yanx3)
 
 #ifndef idq_i_h
 #define idq_i_h
 
 #include <string>
+#include <fstream>
+
 
 class IDQ_I {
 	public:
@@ -16,6 +19,7 @@ class IDQ_I {
 		const std::string &get_name() const {return name;}
 		//Modifiers
 		void set_num(std::string a, int number);
+		void outputs(std::ostream& out_str);
 
 	private:
 		std::string ID;

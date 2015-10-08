@@ -1,5 +1,6 @@
 //File name: item.h
 //Purpose: contain every items in the inventory and their avalibility and customers. 
+//arthor: Xinyue Yan(yanx3)
 
 #ifndef item_h
 #define item_h
@@ -19,6 +20,7 @@ class Item {
 		const std::string& get_description() {return description;} 
 		void get_rental(std::list<IDQ_I>& a_rental) const; 
 		void get_pending(std::list<IDQ_I>& a_pending) const;
+		IDQ_I get_popularity() const; 
 
 		//Modifier
 		void add_rental(IDQ_I a_customer);
@@ -27,6 +29,7 @@ class Item {
 		void set_rental(int b, std::string a, int number);
 		void erase_pending(int a);
 		void set_pending(int a, int number);
+		void count_up(int number) {count += number;}
 
 		//Other member function
 		bool read(std::istream& in_str);
@@ -38,6 +41,7 @@ class Item {
 		std::string description;
 		std::list<IDQ_I> rental;
 		std::list<IDQ_I> pending;
+		int count; //determine the popularity....of the item.....
 
 
 };

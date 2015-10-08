@@ -1,6 +1,7 @@
 //File name: event.h
 //Purpose: store an event of rent or return of a customer at a 
 //specific time (get a everything from file customer) 
+//arthor: Xinyue Yan(yanx3)
 
 #ifndef event_h
 #define event_h

@@ -1,4 +1,9 @@
 //File name : main.cpp
+//Purpose: hw4, may have 4 or 5 argument at a time
+//from a customer record file and inventory file to generate a item rental
+//and pending file and a customer rental and pending file, it may also generate 
+//an additional file of popularity of each item if the user put 5 arguments...
+//arthor: Xinyue Yan(yanx3)
 
 #include "idq_c.h"
 #include "idq_i.h"
@@ -6,8 +11,8 @@
 #include "item.h"
 #include "customer.h"
 
-#include <string>
-#include <list>   
+#include <string> //contain string in class member...
+#include <list>   //contain list 
 #include <fstream>    //in_str and out_str
 #include <iostream>   //cin and cout
 
@@ -27,14 +32,19 @@ void clean_customers(std::list<Customer>& customers);
 //implement of previous prototype;
 
 void clean_customers(std::list<Customer>& customers) {
-	//if rental.size() and pending.size() == 0, remove the customer
+	//The logic for the clean customer is that
+	//loop over the customer lists
+	//check if the customer has any rental or pending items
+	//if no, remove the customer, if yes, hold on...
 	std::list<Customer>::iterator unactive_c;
 	for (unactive_c = customers.begin(); unactive_c != customers.end(); \
 		unactive_c++) {
+		//get two copy list of pending and rental of the customer...
 		std::list<IDQ_C> a_rental;
 		std::list<IDQ_C> a_pending;
 		(*unactive_c).get_rental(a_rental);
 		(*unactive_c).get_pending(a_pending);
+		//check if these two are both empty..
 		if (a_rental.size() == 0 && \
 			a_pending.size() == 0) {
 			unactive_c = customers.erase(unactive_c);
@@ -57,13 +67,15 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 			++in_item;
 		}
 	}
-	//if not in_item, error appears, and do nothing..... 
+	//if not in the item list, error appears, and do nothing..... 
 	if (found_item == false) {
 			std::cerr<<"Customer "<<event.get_c_id()<<" requested item "\
 			<<event.get_i_id()<<" which is not in the inventory.\n";
 	}
-	//if item in_item
+	//if it is in the item list...
 	else {
+		//first add the populariy number.....count popularity..
+		(*in_item).count_up(event.get_num());
 		//check if the number the customer requested is enough
 		//if there is enough items, rent tool to the customer
 		//reduce the amount and add to rental list 
@@ -71,6 +83,7 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 			//change the avalibility
 			//(*in_item).set_num(event.get_action(), event.get_num());
 			//check if the customer is in the item rental list
+			//bool the check if it is in the list.
 			bool found_i_rental = false;
 			std::list<IDQ_I> i_rental;
 			(*in_item).get_rental(i_rental);
@@ -88,12 +101,14 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 			//if he is in the rental list, add renting amount(directly change 
 			//rental member number)
 			if (found_i_rental == true) {
-				(*in_item).set_rental(count_i_rental, event.get_action(), event.get_num());
+				(*in_item).set_rental(count_i_rental, \
+					event.get_action(), event.get_num());
 			}
 			//else(the customer is not in the item rental list) 
-			//push back the customer in the rental list
+			//insert the customer in the rental list
 			else {
-				IDQ_I a_customer(event.get_c_id(), event.get_name(), event.get_num());
+				IDQ_I a_customer(event.get_c_id(), \
+					event.get_name(), event.get_num());
 				(*in_item).add_rental(a_customer);
 			}
 			//check if the new customer is in the customer lists
@@ -106,7 +121,8 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 				else
 					in_item_cus++;
 			}
-			//if the customer already in the customer list. check if the item is in the rental list
+			//if the customer already in the customer list. 
+			//check if the item is in the rental list
 			if (found_customer == true) {
 				//check if the item in customer rental list 
 				bool found_c_rental = false;
@@ -125,7 +141,8 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 				}
 				//if the item is in the customer rental list, add number to the rental amount
 				if (found_c_rental == true) {
-					(*in_item_cus).set_rental(count_c_rental, event.get_action(), event.get_num());
+					(*in_item_cus).set_rental(count_c_rental, \
+						event.get_action(), event.get_num());
 				}
 				//if not in the rental list, push back the idq_c 
 				else {
@@ -138,6 +155,7 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 				Customer new_customer(event.get_c_id(),event.get_name());
 				IDQ_C new_item(event.get_i_id(), event.get_num());
 				new_customer.add_rental(new_item);
+				//determine the correct order of where it should be inserted...
 				bool if_last_one = true;
 				for (std::list<Customer>::iterator p = customers.begin(); \
 					p != customers.end(); ++p) {
@@ -147,6 +165,7 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 						break;
 					}
 				}
+				//corner case that it should the last one....
 				if (if_last_one == true) {
 					customers.push_back(new_customer);
 				} 
@@ -163,7 +182,8 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 			std::list<IDQ_I>::iterator in_i_pending;
 			bool found_i_pending = false;
 			int count_i_pending = 0;
-			for (in_i_pending = i_pending.begin(); in_i_pending != i_pending.end();) {
+			for (in_i_pending = i_pending.begin(); \
+				in_i_pending != i_pending.end();) {
 				if ((*in_i_pending).get_c_id() == event.get_c_id()) {
 					found_i_pending = true;
 				}
@@ -176,11 +196,10 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 				//set the pending number of the original customer..
 				(*in_item).set_pending(count_i_pending, event.get_num());
 				//find the customer iterator.....
-				bool found_p_customer = false;
 				std::list<Customer>::iterator in_item_cus;
-				for (in_item_cus = customers.begin(); in_item_cus != customers.end(); ) {
+				for (in_item_cus = customers.begin(); \
+					in_item_cus != customers.end(); ) {
 					if ((*in_item_cus).get_c_id() == event.get_c_id()) {
-						found_p_customer = true;
 						break;}
 					else
 						in_item_cus++;
@@ -191,7 +210,8 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 				std::list<IDQ_C> c_pending;
 				(*in_item_cus).get_pending(c_pending);
 				int count_c_pending;
-				for (in_c_pending = c_pending.begin(); in_c_pending != c_pending.end(); ) {
+				for (in_c_pending = c_pending.begin(); \
+					in_c_pending != c_pending.end(); ) {
 					if ((*in_c_pending).get_i_id() == event.get_i_id()) {
 						break;
 					}
@@ -211,7 +231,8 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 				//check if the customer is activated :D
 				bool found_customer = false;
 				std::list<Customer>::iterator in_item_cus;
-				for (in_item_cus = customers.begin(); in_item_cus != customers.end(); ) {
+				for (in_item_cus = customers.begin(); \
+					in_item_cus != customers.end(); ) {
 					if ((*in_item_cus).get_c_id() == event.get_c_id()) {
 						found_customer = true;
 						break;}
@@ -224,7 +245,9 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 				}
 				//if not, add a new customer and add pending list 
 				else {
+					//create a new customer because it was not in the list
 					Customer activate_cus(event.get_c_id(), event.get_name());
+					//add pending before insert.
 					activate_cus.add_pending(an_item);
 					bool if_last_one = true;
 					for (std::list<Customer>::iterator p = customers.begin(); \
@@ -259,8 +282,9 @@ void return_tool(const Event& event, std::list<Item>& items, \
 	}
 	//if not in the item list
 	if (found_item == false) {
-		std::cerr << "Customer "<< event.get_c_id() << " attempted to return item "<< \
-		event.get_i_id() << " which is not in the inventory.\n";
+		std::cerr << "Customer "<< event.get_c_id() <<\
+		 " attempted to return item "<< event.get_i_id() <<\
+		  " which is not in the inventory.\n";
 	}
 	//if in the item list
 	else {
@@ -279,7 +303,9 @@ void return_tool(const Event& event, std::list<Item>& items, \
 		}
 		//not activated...no rent books(this is an error)
 		if (found_customer == false) {
-			std::cerr << "Customer " << event.get_c_id() << " is not a activated customer\n";
+			std::cerr << "Customer " << event.get_c_id() <<\
+			 " attempted to return item " << event.get_i_id() <<\
+			  " which she/he did not rent.\n" ;
 		}
 		//activated, if i_id in the customers rental list
 		else {
@@ -302,8 +328,9 @@ void return_tool(const Event& event, std::list<Item>& items, \
 			}
 			//if not in the customer rental list, it is an error
 			if (found_c_rental == false) {				
-				std::cerr << "Customer " << event.get_c_id() << " attempted to return item " \
-				<< event.get_i_id() << " which she/he did not rent.\n";
+				std::cerr << "Customer " << event.get_c_id() <<\
+				 " attempted to return item " << event.get_i_id() <<\
+				  " which she/he did not rent.\n";
 			}
 			//if in the rental list
 			else {
@@ -339,8 +366,10 @@ void return_tool(const Event& event, std::list<Item>& items, \
 					}
 					//if smaller, set the number......
 					else {
-						(*in_inventory).set_rental(count_i_rental, event.get_action(), event.get_num());
-						(*return_cus).set_rental(count_c_rental, event.get_action(), event.get_num());
+						(*in_inventory).set_rental(count_i_rental, \
+							event.get_action(), event.get_num());
+						(*return_cus).set_rental(count_c_rental, \
+							event.get_action(), event.get_num());
 					}
 					//doing handle pending.
 					//maybe put in main function......
@@ -352,10 +381,20 @@ void return_tool(const Event& event, std::list<Item>& items, \
 }
 
 void handle_pending(Item& a_item, std::list<Customer>& customers) {
+	//the logic for the function is that
+	//loop the item pending list to find which and how many customer 
+	//to rent
+	//if the person's rental amount is smaller than the availability
+	//rent to him and erase from pending list then add to rental list
+	//the same as customer list( but first find the person on customer
+	//list and find the location of the pending item on the customer 
+	//pending list.....)
 	std::list<IDQ_I> i_pending;
 	a_item.get_pending(i_pending);
+	//count the location of the pending customer in item pendng list.
 	int count_i_pend = 0;
-	for (std::list<IDQ_I>::iterator pend_cus = i_pending.begin(); pend_cus != i_pending.end(); ++pend_cus) {
+	for (std::list<IDQ_I>::iterator pend_cus = i_pending.begin(); \
+		pend_cus != i_pending.end(); ++pend_cus) {
 		if ((*pend_cus).get_num() <= a_item.get_num()) {
 			//remove from customer pending list
 			//add to customer rental list
@@ -374,10 +413,12 @@ void handle_pending(Item& a_item, std::list<Customer>& customers) {
 			count_i_pend--;
 			//find the iterator of that item in the pending list of c
 			std::list<IDQ_C> c_pending;
-			//a number to find the location of the element.....as an argument in the erase function....
+			//a number to find the location of the element.....
+			//as an argument in the erase function....
 			int count_c_pend = 0;
 			(*pend_cus_in_c).get_pending(c_pending);
-			for (std::list<IDQ_C>::iterator pend_item = c_pending.begin(); pend_item != c_pending.end(); ) {
+			for (std::list<IDQ_C>::iterator pend_item = c_pending.begin(); \
+				pend_item != c_pending.end(); ) {
 				if ((*pend_item).get_i_id() == a_item.get_i_id()) { 
 					break;}
 				else {
@@ -385,6 +426,7 @@ void handle_pending(Item& a_item, std::list<Customer>& customers) {
 					pend_cus_in_c++;
 				}
 			}
+			//if there is a pending customer, erase it
 			(*pend_cus_in_c).erase_pending(count_c_pend);
 		}
 		count_i_pend++;
@@ -393,7 +435,7 @@ void handle_pending(Item& a_item, std::list<Customer>& customers) {
 
 
 int main(int argc, char* argv[]) {
-	if (argc != 5) {
+	if (argc != 5 && argc != 6) {
 		std::cerr<<"Not the correct number of arguments....\n";
 		return 1;
 	}
@@ -442,7 +484,8 @@ int main(int argc, char* argv[]) {
 		while (one_item.read(in_str_i) ) {
 			if (one_item.get_i_id()[0] == 'T' and one_item.get_num() != 0) {
 				bool if_last_one = true;
-				for (std::list<Item>::iterator p = inventory.begin(); p != inventory.end(); ++p) {
+				for (std::list<Item>::iterator p = inventory.begin(); \
+					p != inventory.end(); ++p) {
 					if (one_item.get_i_id() < (*p).get_i_id()) {
 						inventory.insert(p, one_item);
 						if_last_one = false;
@@ -455,20 +498,23 @@ int main(int argc, char* argv[]) {
 			}
 		}
 		//input event file...
+		//input every event in the customer file.....
+		//no matter whether it is a valid ID
 		while (one_event.read(in_str_e) ) {
-			//if (one_event.get_c_id()[0] == 'C') 
-				events.push_back(one_event);
+			events.push_back(one_event);
 		}
 
 		//start to loop event make updated customer and inventory lists.....
 		std::list<Event>::iterator an_event;
 		for (an_event = events.begin(); an_event != events.end(); ++an_event) {
-			//first check if the action is rent or return
+			//if it is a invalid ID, print error and skip this event...
 			if ((*an_event).get_c_id()[0] != 'C') {
 				std::cerr << "Invalid customer information found for ID " << \
-				(*an_event).get_c_id() <<" in the customer file \n";
+				(*an_event).get_c_id() <<" in the customer file.\n";
 			}
+
 			else {
+				//first check if the action is rent or return
 				if ((*an_event).get_action() == "rent") {
 					rent_tool(*an_event, inventory, customers);
 				}
@@ -479,11 +525,49 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
+		if (argc == 6) {
+			// when the store wants to generate a popularity statistics....
+			//first check the output file status...
+			std::ofstream out_str_p(argv[5]);
+			if (!out_str_p.good()) {
+				std::cerr << "Could not open customer output " << argv[5] << " to write\n";
+				return 1;
+			}
+			//create a new list for hold popularity items....
+			std::list<IDQ_I> popularity;
+			//all the information are stored in inventory list.........
+			for (std::list<Item>::iterator itr = inventory.begin(); \
+				itr != inventory.end(); ++itr) {
+				IDQ_I pop = (*itr).get_popularity();
+				//with count most......put to the front...
+				//order to put in the popularity lists...
+				bool last_one = true;
+				for (std::list<IDQ_I>::iterator itr2 = popularity.begin(); \
+					itr2 != popularity.end(); ++itr2) {
+					if (pop.get_num() > (*itr2).get_num() || 
+						(pop.get_num() == (*itr2).get_num() && \
+							pop.get_c_id() < (*itr2).get_c_id()) ) {
+						last_one = false;
+						popularity.insert(itr2, pop);
+						break;
+					}
+				}
+				if (last_one == true) {
+					popularity.push_back(pop);
+				}
+			}
+			//output to the file
+			for (std::list<IDQ_I>::iterator itr = popularity.begin(); \
+				itr != popularity.end(); ++itr) {
+				(*itr).outputs(out_str_p);
+			}
+		}
 		//go for outputs...
 		//inventory output 
 		std::list<Item>::iterator out_item;
 		std::list<Customer>::iterator out_customer;
-		for (out_item = inventory.begin(); out_item != inventory.end(); ++out_item) {
+		for (out_item = inventory.begin(); \
+			out_item != inventory.end(); ++out_item) {
 			(*out_item).outputs(out_str_i);
 		}
 		//customer output

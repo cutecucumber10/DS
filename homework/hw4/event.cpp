@@ -1,5 +1,6 @@
 //File name: event.cpp
 //Purpose: implementation of event.h
+//arthor: Xinyue Yan(yanx3)
 
 #include "event.h"
 

@@ -1,11 +1,12 @@
 //File name: item.cpp
 //Purpose: implement of item.h
+//arthor: Xinyue Yan(yanx3)
 
 #include "item.h"
 
-#include <string>
+#include <string>  
 #include <list>
-#include <iostream>
+#include <iostream> 
 #include <fstream>
 
 //make a copy of rental list
@@ -16,6 +17,11 @@ void Item::get_rental(std::list<IDQ_I>& a_rental) const {
 //make a copy of pending list
 void Item::get_pending(std::list<IDQ_I>& a_pending) const {
 	a_pending = pending;
+}
+
+IDQ_I Item::get_popularity() const {
+	IDQ_I a_pop(i_id, description, count);
+	return a_pop;
 }
 
 //add to rental list, amount reduces.....
@@ -88,6 +94,7 @@ void Item::set_pending(int a, int number) {
 	for (int i = 0; i < a; i++) {
 		p++;
 	}
+	//when set pending, the pending number may change.
 	(*p).set_num("rent",number);
 }
 
@@ -101,6 +108,7 @@ bool Item::read(std::istream& in_str) {
 		//error but no need to stop....
 		std::cerr << "Invalid inventory ID " << i_id <<  " found in the inventory file.\n";
 	}
+	count = 0; 
 	return true;
 }
 

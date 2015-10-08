@@ -1,5 +1,6 @@
 //File name: customer.cpp
 //Purpose: implement of customer.h
+//arthor: Xinyue Yan(yanx3)
 
 #include "customer.h"
 
@@ -102,6 +103,7 @@ void Customer::set_pending(int a, int number) {
 
 void Customer::outputs(std::ostream& out_str) {
 	out_str << c_id << " " << name << "\n";
+	//no rental, no print
 	if (rental.size() != 0) {
 		out_str << "Rentals: ";
 		std::list<IDQ_C>::iterator a_rent;
@@ -111,6 +113,7 @@ void Customer::outputs(std::ostream& out_str) {
 		}
 		out_str << "\n";
 	}
+	//no pending, no print
 	if (pending.size() != 0) {
 		out_str << "Pending: " ;
 		std::list<IDQ_C>::iterator a_pend;
