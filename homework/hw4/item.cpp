@@ -59,7 +59,7 @@ void Item::erase_rental(int a) {
 
 //change rental amounts, get action to find whether it needs increase or decrease.
 void Item::set_rental(int b, std::string a, int number) {
-	//int b is LOCATION of the term in the list, string is the action(rent or return)
+	//int b is LOCATION of the term in the list, string is the action(rent/return)
 	//int number is the amount they rent or return
 	//find the iterator
 	std::list<IDQ_I>::iterator p = rental.begin();
@@ -106,7 +106,8 @@ bool Item::read(std::istream& in_str) {
 	}
 	if (i_id[0] != 'T' || num == 0) {
 		//error but no need to stop....
-		std::cerr << "Invalid inventory ID " << i_id <<  " found in the inventory file.\n";
+		std::cerr << "Invalid inventory ID " << i_id <<\
+		  " found in the inventory file.\n";
 	}
 	count = 0; 
 	return true;
@@ -119,7 +120,8 @@ void Item::outputs(std::ostream& out_str) {
 	//if no Rental cus, skip this is if.......
 	if (rental.size() != 0) {
 		out_str << "Rental Customers: ";
-		for (std::list<IDQ_I>::iterator a_rental = rental.begin(); a_rental != rental.end() ; ++a_rental) {
+		for (std::list<IDQ_I>::iterator a_rental = rental.begin(); \
+			a_rental != rental.end() ; ++a_rental) {
 			out_str << (*a_rental).get_c_id() << ' ' <<(*a_rental).get_name()\
 			<< " (" << (*a_rental).get_num() << ") ";
 		}
@@ -127,8 +129,32 @@ void Item::outputs(std::ostream& out_str) {
 	}
 	//if no Pending cus, skip this is if.......
 	if (pending.size() != 0) {
+		//because pending needs to sort in id order when output
+		//the item pending list sort by timestamp
+		//make another list to hold sorted member.......
+		//the method is the same as previous insert rental...
+		std::list<IDQ_I> order_pending;
+		for (std::list<IDQ_I>::iterator q = pending.begin(); \
+			q != pending.end(); ++q) {
+			//if the id should be the last one, just use push_back(becaues the loop 
+			//cannot go the the one after the original last one.. and insert after the last
+			//one, if it is normal, use insert function
+			bool if_last_one = true;
+			for (std::list<IDQ_I>::iterator p = order_pending.begin(); \
+				p != order_pending.end(); ++p) {
+				if ((*q).get_c_id() < (*p).get_c_id()) {
+					order_pending.insert(p, *q);
+					if_last_one = false;
+					break;
+				}
+			}
+			if (if_last_one == true) {
+				order_pending.push_back(*q);
+			}
+		}
 		out_str << "Pending Customers: ";
-		for (std::list<IDQ_I>::iterator a_pending = pending.begin(); a_pending != pending.end() ; ++a_pending) {
+		for (std::list<IDQ_I>::iterator a_pending = order_pending.begin(); \
+			a_pending != order_pending.end() ; ++a_pending) {
 			out_str << (*a_pending).get_c_id() << " " << (*a_pending).get_name()\
 			<< " (" << (*a_pending).get_num() << ") ";
 		}

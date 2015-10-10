@@ -79,12 +79,13 @@ Node* reverse_nodes_in_linked_list(Node *input) {
     Node* two = input;
     ++two;
     while (two->ptr != NULL) {
+      Node* temp = ++two;
       two -> ptr = one;
       one = two;
-      two++;
+      two = temp;
     }
     two -> ptr = one;
-    Node* head = &(*two);
+    Node* head = two;
     end -> ptr = NULL;
     return head;
   }
@@ -129,29 +130,37 @@ int main() {
   // print that data
   print_linked_list("c",c);
 
-  // 
   // WRITE A FEW MORE TEST CASES OF make_linked_list_from_STL_list
-  //
+  std::cout << "=====TEST CASE: EMPTY LIST======\n";
+  std::list<int> bb;
+  bb.clear();
+  Node* cc = make_linked_list_from_STL_list(bb);
+  print_linked_list("cc",cc);
+  std::cout << "=====TEST CASE: ONE-ELEMENT LIST======\n";
+  bb.push_back(1);
+  cc = make_linked_list_from_STL_list(bb);
+  print_linked_list("cc",cc);
 
   // reverse a linked list of nodes
-  
+  std::cout << "=======TEST CASE: REVERSING C========\n";
   Node* d = reverse_nodes_in_linked_list(c);
-  // print this data
   print_linked_list("d",d);
-
-  // 
-  // WRITE A FEW MORE TEST CASES OF reverse_nodes_in_linked_list
-  //
-
-  std::list<int> k;
-  Node* k = make_linked_list_from_STL_list(k);
-  print_linked_list("k",k);
-  Node* m = reverse_nodes_in_linked_list(k);
-  print_linked_list("m",m);
-
-  // NOTE: We are not deleting any of the Nodes we created...  so this
-  //       program has some memory leaks!  More on this in future
-  //       lectures & labs :)
+  
+  std::cout << "=======TEST CASE: REVERSING AN EMPTY LIST========\n";
+  std::list<int> temp;
+  Node* dd = make_linked_list_from_STL_list(temp);
+  dd = reverse_nodes_in_linked_list(dd);
+  print_linked_list("dd",dd);
+  
+  std::cout << "=======TEST CASE: REVERSING A ONE-ELEMENT LIST========\n";
+  temp.push_back(1);
+  dd = make_linked_list_from_STL_list(temp);
+  std::cout << "linked list:\n";
+  print_linked_list("dd",dd);
+  std::cout << "reversed list:\n";
+  dd = reverse_nodes_in_linked_list(dd);
+  print_linked_list("dd",dd);
+  
 
 }
 

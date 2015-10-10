@@ -150,7 +150,7 @@ void rent_tool(const Event& event, std::list<Item>& items, \
 					(*in_item_cus).add_rental(new_item);
 				}
 			}
-			//if not find... add this customer to be activated and add it's rental lists = =!
+			//if not find... add this customer to be activated and add it's rental lists
 			else {
 				Customer new_customer(event.get_c_id(),event.get_name());
 				IDQ_C new_item(event.get_i_id(), event.get_num());
@@ -444,23 +444,27 @@ int main(int argc, char* argv[]) {
 		//open the input file and check if the status of the file is okkk
 		std::ifstream in_str_i(argv[1]);
 		if (!in_str_i.good()) {
-			std::cerr<<"Could not open inventory file " << argv[1] << " to read\n";
+			std::cerr<<"Could not open inventory file " \
+			<< argv[1] << " to read\n";
 			return 1;
 		}
 		//Second list is event list(holds all the actions of customers)
 		std::ifstream in_str_e(argv[2]);
 		if (!in_str_e.good()) {
-			std::cerr<<"Could not open event file " << argv[2] << " to read\n";
+			std::cerr<<"Could not open event file " \
+			<< argv[2] << " to read\n";
 			return 1;
 		}
 		std::ofstream out_str_i(argv[3]);
 		if (!out_str_i.good()) {
-			std::cerr << "Could not open inventory output " << argv[3] << " to write\n";
+			std::cerr << "Could not open inventory output " \
+			<< argv[3] << " to write\n";
 			return 1;
 		}
 		std::ofstream out_str_c(argv[4]);
 		if (!out_str_c.good()) {
-			std::cerr << "Could not open customer output " << argv[4] << " to write\n";
+			std::cerr << "Could not open customer output " \
+			<< argv[4] << " to write\n";
 			return 1;
 		}
 		//create three list....
@@ -530,7 +534,8 @@ int main(int argc, char* argv[]) {
 			//first check the output file status...
 			std::ofstream out_str_p(argv[5]);
 			if (!out_str_p.good()) {
-				std::cerr << "Could not open customer output " << argv[5] << " to write\n";
+				std::cerr << "Could not open customer output " \
+				<< argv[5] << " to write\n";
 				return 1;
 			}
 			//create a new list for hold popularity items....

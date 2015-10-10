@@ -11,6 +11,7 @@ IDQ_C::IDQ_C(std::string aID, int aNumber) {
 	num = aNumber;
 }
 
+//here shows the number change for a customer rent..../pending
 void IDQ_C::set_num(std::string a, int number) {
 	if (a == "rent")
 		num += number;
