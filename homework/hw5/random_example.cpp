@@ -1,6 +1,7 @@
 #include <cassert>
 #include <iostream>
 #include <ctime>
+#include <cstdlib>
 
 #include "mtrand.h"
 
@@ -21,31 +22,39 @@ int main(int argc, char* argv[]) {
   assert (number > 0);
   assert (max > 0);
 
-
+/*
   std::cout << "Generating " << number 
             << " random integer values in the range [0," << max << "]" << std::endl;
 
 
   // Using a fixed seed can be useful for testing & debugging.  This
   // sequence will be the same on future runs of the program.
-  MTRand_int32 mtrand_fixed_seed(42);
+  MTRand_int32 mtrand_fixed_seed(21);
   std::cout << "fixed seed:                 ";
   for (int i = 0; i < number; i++) {
     std::cout << " " << mtrand_fixed_seed() % (max+1);
   }  
   std::cout << std::endl;
-
+*/
 
   // "Seeding" the random number generator will start the generation
   // at a different point in the sequence.  Here we seed by the
   // current time (in seconds).  This sequence will be different of
   // future runs of the program.  (Assuming it is at least a second
   // later!)
+  int arr[number];
+  for (int i = 0; i < number; ++i ) 
+    arr[i] = i;
   std::cout << "seeded by the current time: ";
   MTRand_int32 mtrand_autoseed(time(NULL));
-  for (int i = 0; i < number; i++) {
-    std::cout << " " << mtrand_autoseed() % (max+1);
+  for (int i = number -1 ; i >= 0; --i) {
+    int r = mtrand_autoseed() % (max);
+    int temp = arr[i];
+    arr[i] = arr[r];
+    arr[r] = temp;
   }  
+  for (int i = 0; i < number; ++i ) 
+    std::cout << arr[i] << " ";
   std::cout << std::endl;
 
 }
